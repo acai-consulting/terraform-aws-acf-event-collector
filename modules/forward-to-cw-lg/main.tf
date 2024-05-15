@@ -21,11 +21,6 @@ data "aws_region" "current" {}
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ FORWARDING ALL EVENTS
 # ---------------------------------------------------------------------------------------------------------------------
-resource "aws_cloudwatch_event_bus_policy" "central_bus_policy_attach" {
-  policy         = data.aws_iam_policy_document.central_bus_policy.json
-  event_bus_name = var.settings.eventbus_name
-}
-
 resource "aws_cloudwatch_event_rule" "forward_to_cw_lg" {
   name           = "forward_to_cw_lg_${var.settings.cw_lg.lg_name}"
   event_bus_name = var.settings.eventbus_name
@@ -33,8 +28,9 @@ resource "aws_cloudwatch_event_rule" "forward_to_cw_lg" {
 }
 
 resource "aws_cloudwatch_event_target" "forward_to_cw_lg" {
-  rule      = aws_cloudwatch_event_rule.forward_to_cw_lg.name
   target_id = "SendToCwLg"
+  rule      = aws_cloudwatch_event_rule.forward_to_cw_lg.name
+  event_bus_name = var.settings.eventbus_name
   arn       = aws_cloudwatch_log_group.cw_lg_events_dump.arn
 }
 
@@ -45,7 +41,7 @@ resource "aws_cloudwatch_log_group" "cw_lg_events_dump" {
   name              = var.settings.cw_lg.lg_name
   skip_destroy      = var.settings.cw_lg.lg_skip_destroy
   retention_in_days = var.settings.cw_lg.lg_retention_in_days
-  kms_key_id        = aws_kms_key.cw_lg_events_dump_encryption[0].arn
+  kms_key_id        = var.settings.cw_lg.lg_encyrption != null ? module.cw_lg_events_dump_encryption[0].arn : null
   tags              = var.resource_tags
 }
 

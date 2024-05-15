@@ -6,7 +6,7 @@ variable "settings" {
       event_pattern        = optional(string, null)
       lg_name              = string
       lg_retention_in_days = number
-      lg_skip_destroy      = optional(bool, false)
+      lg_skip_destroy      = bool
       lg_encyrption = optional(object({
         cmk_policy_read_override       = optional(list(string), null) # should override the statement_id 'ReadPermissions'
         cmk_policy_management_override = optional(list(string), null) # should override the statement_id 'ManagementPermissions'
