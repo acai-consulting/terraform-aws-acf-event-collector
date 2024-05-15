@@ -8,11 +8,11 @@ variable "member_settings" {
       eb_forwarding_iam_role = object({
         name                     = optional(string, "event-collector-forwarder-role")
         path                     = optional(string, "/")
-        permissions_boundary_arn = optional(string, null)
+        permissions_boundary_arn = optional(string, "")
       })
       event_rules = list(object({
         name           = string
-        description    = optional(string, null)
+        description    = optional(string, "")
         event_bus_name = optional(string, "default")
         pattern        = string
       }))

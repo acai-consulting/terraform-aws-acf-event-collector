@@ -1,20 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
 Resources:
-  CentralNotificationDetectFailedBackups:
+%{ for item in event_rules }
+  CreateEventRules${item.name}:
     Type: "AWS::Events::Rule"
     Properties:
-      Name: "backup_failure_to_central_eventbus"
+      Name: ${item.name}
+      Description: ${item.description}
+      EventBusName: ${item.event_bus_name}
       EventPattern:
-        source:
-          - "aws.backup"
-        detail-type:
-          - "Backup Job State Change"
-          - "Copy Job State Change"
-        detail:
-          state:
-            - "FAILED"
+${item.pattern}
       Targets:
-        - Arn: ${auditing_central_eventbus_arn}
+        - Arn: ${central_eventbus_arn}
           Id: "SendToCentralEventBus"
           RoleArn: !Sub arn:aws:iam::$${AWS::AccountId}:role/${central_eventbus_iam_role_name}
+      Tags: 
+${resource_tags_block}      

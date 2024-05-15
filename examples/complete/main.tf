@@ -125,14 +125,27 @@ module "event_sender1" {
           name = "failed_aws_backups"
           pattern = <<PATTERN
 {
-"source": ["aws.backup"],
-"detail-type": ["Backup Job State Change", "Copy Job State Change"],
-"detail": {
-"state": ["FAILED", "COMPLETED"]
+  "source": ["aws.backup"],
+  "detail-type": ["Backup Job State Change", "Copy Job State Change"],
+  "detail": {
+    "state": ["FAILED", "COMPLETED"]
+  }
 }
+PATTERN
+        },
+        {
+          name = "disable_key_rotation"
+          pattern = <<PATTERN
+{
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["kms.amazonaws.com"],
+    "eventName": ["DisableKeyRotation"]
+  }
 }
 PATTERN
         }
+
       ]
     }
   }
@@ -178,8 +191,9 @@ PATTERN
   }
 }
 
-module "event_sender3" {
-  source = "../../member/terraform"
+
+module "event_sender_cf" {
+  source = "../../member/stacksets"
 
   member_settings = {
     event_collector = {
@@ -191,22 +205,32 @@ module "event_sender3" {
       }
       event_rules = [
         {
+          name = "failed_aws_backups"
+          pattern = <<PATTERN
+        source:
+          - "aws.backup"
+        detail-type:
+          - "Backup Job State Change"
+          - "Copy Job State Change"
+        detail:
+          state:
+            - "FAILED"
+PATTERN
+        },
+        {
           name = "disable_key_rotation"
           pattern = <<PATTERN
-{
-"detail-type": ["AWS API Call via CloudTrail"],
-"detail": {
-  "eventSource": ["kms.amazonaws.com"],
-  "eventName": ["DisableKeyRotation"]
-}
-}
+        detail-type:
+          - "AWS API Call via CloudTrail"
+        detail:
+          eventSource:
+            - "kms.amazonaws.com"
+          eventName:
+            - "DisableKeyRotation"
 PATTERN
         }
+
       ]
     }
-  }
-  is_primary_region = false
-  providers = {
-    aws = aws.workload
   }
 }

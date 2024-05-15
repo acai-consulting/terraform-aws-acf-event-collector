@@ -9,7 +9,11 @@ Resources:
   CentralNotificationBackupAlertRole:
     Type: "AWS::IAM::Role"
     Properties:
-      RoleName: ${auditing_eventbus_iam_role_name}
+      RoleName: ${central_eventbus_iam_role_name}
+      Path: ${central_eventbus_iam_role_path}
+      PermissionsBoundary: ${central_eventbus_iam_role_permissions_boundary_arn}
+      Tags: 
+${resource_tags_block}      
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -26,4 +30,4 @@ Resources:
                 Effect: "Allow"
                 Action:
                   - "events:PutEvents"
-                Resource: ${auditing_central_eventbus_arn}     
+                Resource: ${central_eventbus_arn}     
