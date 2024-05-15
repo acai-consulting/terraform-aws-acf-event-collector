@@ -1,3 +1,8 @@
+output "account_id" {
+  description = "account_id"
+  value       = data.aws_caller_identity.core_security.account_id
+}
+
 output "central_collector" {
   description = "central_collector"
   value       = module.central_collector

@@ -21,8 +21,4 @@ func TestExampleComplete(t *testing.T) {
 
 	accountidOutput := terraform.Output(t, terraformOptions, "account_id")
 	t.Log(accountidOutput)
-
-	inputOutput := terraform.Output(t, terraformOptions, "input")
-	t.Log(inputOutput)
-	// Do testing. I.E check if your ressources are deployed via AWS GO SDK
 }

@@ -39,7 +39,10 @@ data "aws_iam_policy_document" "override" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.core_logging.account_id}:root"]
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.core_security.account_id}:root",
+        "arn:aws:iam::${data.aws_caller_identity.core_logging.account_id}:root"
+      ]
     }
     actions = [
       "kms:Describe*",
