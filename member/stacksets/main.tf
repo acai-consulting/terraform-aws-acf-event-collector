@@ -34,9 +34,11 @@ locals {
 data "template_file" "member_global" {
   template = file("${path.module}/cloudformation/member_global.yaml.tftpl")
   vars = {
-    central_eventbus_arn           = var.member_settings.event_collector.central_eventbus_arn
-    central_eventbus_iam_role_name = var.member_settings.account_baseline.central_eventbus_iam_role_name
-    resource_tags_block            = local.resource_tags_block
+    central_eventbus_arn                               = var.member_settings.event_collector.central_eventbus_arn
+    central_eventbus_iam_role_name                     = var.member_settings.account_baseline.eb_forwarding_iam_role.name
+    central_eventbus_iam_role_path                     = var.member_settings.account_baseline.eb_forwarding_iam_role.path
+    central_eventbus_iam_role_permissions_boundary_arn = var.member_settings.account_baseline.eb_forwarding_iam_role.permissions_boundary_arn
+    resource_tags_block                                = local.resource_tags_block
   }
 }
 
@@ -44,9 +46,10 @@ data "template_file" "member_regional" {
   template = file("${path.module}/cloudformation/member_regional.yaml.tftpl")
   vars = {
     central_eventbus_arn           = var.member_settings.event_collector.central_eventbus_arn
-    central_eventbus_iam_role_name = var.member_settings.account_baseline.central_eventbus_iam_role_name
-    
-    resource_tags_block            = local.resource_tags_block
+    central_eventbus_iam_role_name = var.member_settings.account_baseline.eb_forwarding_iam_role.name
+    event_rules                    = var.member_settings.account_baseline.event_rules
+
+    resource_tags_block = local.resource_tags_block
   }
 }
 

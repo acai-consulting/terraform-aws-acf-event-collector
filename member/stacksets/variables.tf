@@ -1,13 +1,21 @@
 variable "member_settings" {
   description = "Specification of the member resources"
-
   type = object({
     event_collector = object({
       central_eventbus_arn = optional(string, "")
     })
     account_baseline = object({
-      central_eventbus_iam_role_name = string
-      event_patterns                 = list(string)
+      eb_forwarding_iam_role = object({
+        name                     = optional(string, "event-collector-forwarder-role")
+        path                     = optional(string, "/")
+        permissions_boundary_arn = optional(string, null)
+      })
+      event_rules = list(object({
+        name           = string
+        description    = optional(string, null)
+        event_bus_name = optional(string, "default")
+        pattern        = string
+      }))
     })
   })
 }
