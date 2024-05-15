@@ -51,7 +51,7 @@ data "template_file" "member_regional" {
       for rule in var.member_settings.account_baseline.event_rules : {
         camel_case_name = join("", [
           for part in split("_", replace(rule.name, "-", "_")) : title(part)
-        ])        
+        ])
         name           = rule.name
         description    = rule.description
         event_bus_name = rule.event_bus_name

@@ -102,7 +102,7 @@ PATTERN
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.10 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 
 ## Providers
@@ -113,25 +113,35 @@ PATTERN
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_cw_lg_forwarding"></a> [cw\_lg\_forwarding](#module\_cw\_lg\_forwarding) | ./modules/forward-to-cw-lg | n/a |
+| <a name="module_eventbus_encryption"></a> [eventbus\_encryption](#module\_eventbus\_encryption) | ./modules/kms | n/a |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_caller_identity.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_cloudwatch_event_bus.collector](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_bus) | resource |
+| [aws_cloudwatch_event_bus_policy.central_bus_policy_attach](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_bus_policy) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_iam_policy_document.central_bus_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.eventbus_encryption_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_organizations_organization.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/organizations_organization) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the central event collector. | <pre>object({<br>    eventbus_name = string<br>    eventbus_encyrption = optional(object({<br>      cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>    }), null)<br>    forwardings = object({<br>      cw_lg = optional(list(object({<br>        event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")<br>        lg_name              = string<br>        lg_retention_in_days = optional(number, 30)<br>        lg_skip_destroy      = optional(bool, false)<br>        lg_encyrption = optional(object({<br>          cmk_policy_override = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>        }), null)<br>      })), [])<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_account_id"></a> [account\_id](#output\_account\_id) | account\_id |
-| <a name="output_input"></a> [input](#output\_input) | pass through input |
+| <a name="output_eventbus_arn"></a> [eventbus\_arn](#output\_eventbus\_arn) | eventbus\_arn |
 <!-- END_TF_DOCS -->
 
 <!-- AUTHORS -->
