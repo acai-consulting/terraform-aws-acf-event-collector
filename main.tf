@@ -136,6 +136,6 @@ module "cw_lg_forwarding" {
     cw_lg         = each.value.cw_lg
   }
   resource_tags = var.resource_tags
-  depends_on = [ aws_cloudwatch_event_bus.collector ]
+  depends_on    = [aws_cloudwatch_event_bus.collector]
 }
 
