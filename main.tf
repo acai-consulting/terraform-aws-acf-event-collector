@@ -34,8 +34,16 @@ locals {
       "module_version"         = /*inject_version_start*/ "1.0.0" /*inject_version_end*/
     }
   )
-}
 
+  forwardings = flatten([
+    for setting in var.settings : [
+      for forwarding in setting.forwardings : {
+        eventbus_name = setting.eventbus_name
+        cw_lg         = forwarding.cw_lg
+      }
+    ]
+  ])
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ MAIN
@@ -67,4 +75,15 @@ data "aws_iam_policy_document" "central_bus_policy" {
       values   = ["${data.aws_organizations_organization.org_id.id}"]
     }
   }
+}
+
+module "cw_lg_forwarding" {
+  for_each = { for fw in local.forwardings : "${fw.eventbus_name}-${fw.cw_lg.lg_name}" => fw }
+
+  source              = "./modules/forward-to-cw-lg"
+  settings = {
+    eventbus_name = each.value.eventbus_name
+    cw_lg = each.value.cw_lg
+  }
+  resource_tags = var.resource_tags
 }

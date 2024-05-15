@@ -7,6 +7,9 @@ variable "settings" {
       lg_name       = string
       lg_retention_in_days = number
       lg_skip_destroy = optional(bool, false)
+      lg_encyrption = optional(object({
+        kms_policy_overrides = optional(list(string), null) # should override the statement_id 'PrincipalPermissions'
+      }), null)
     })
   })
 }
