@@ -61,7 +61,7 @@ data "aws_iam_policy_document" "eventbus_forwarder_trust" {
       ]
     }
     actions = [
-      "events:PutEvents"
+      "sts:AssumeRole"
     ]
   }
 }
@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "eventbus_forwarder_permissions" {
     actions = [
       "events:PutEvents"
     ]
-    resources = [ var.member_settings.event_collector.central_eventbus_arn ]
+    resources = [var.member_settings.event_collector.central_eventbus_arn]
   }
 }
 
@@ -97,15 +97,20 @@ data "aws_iam_policy_document" "eventbus_forwarder_permissions" {
 #   Allow event-bus from other account to send to Core Auditing Account 
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_cloudwatch_event_rule" "eventsrule_cloudwatch" {
-  name          = var.member_settings.account_baseline.event_rules.name
-  event_pattern = var.member_settings.account_baseline.event_rules.pattern
-  tags = local.resource_tags
+  count = length(var.member_settings.account_baseline.event_rules)
+
+  name           = element(var.member_settings.account_baseline.event_rules, count.index).name
+  description    = element(var.member_settings.account_baseline.event_rules, count.index).description
+  event_bus_name = element(var.member_settings.account_baseline.event_rules, count.index).event_bus_name
+  event_pattern  = element(var.member_settings.account_baseline.event_rules, count.index).pattern
+  tags           = local.resource_tags
 }
 
 resource "aws_cloudwatch_event_target" "forward_to_central_eb" {
+  count = length(var.member_settings.account_baseline.event_rules)
+
   target_id = "SendtoCentralEventBus"
   role_arn  = replace("arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.member_settings.account_baseline.eb_forwarding_iam_role.path}${var.member_settings.account_baseline.eb_forwarding_iam_role.name}", "////", "/")
-  rule      = aws_cloudwatch_event_rule.eventsrule_cloudwatch.name
+  rule      = element(aws_cloudwatch_event_rule.eventsrule_cloudwatch.*.name, count.index)
   arn       = var.member_settings.event_collector.central_eventbus_arn
 }
-

@@ -1,6 +1,5 @@
 variable "member_settings" {
   description = "Specification of the member resources"
-
   type = object({
     event_collector = object({
       central_eventbus_arn = optional(string, "")
@@ -12,8 +11,10 @@ variable "member_settings" {
         permissions_boundary_arn = optional(string, null)
       })
       event_rules = list(object({
-        name    = string
-        pattern = string
+        name           = string
+        description    = optional(string, null)
+        event_bus_name = optional(string, "default")
+        pattern        = string
       }))
     })
   })
