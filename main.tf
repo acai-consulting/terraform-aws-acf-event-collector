@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "central_bus_policy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.current.id}"]
+      values   = [ data.aws_organizations_organization.current.id ]
     }
   }
 }
