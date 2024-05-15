@@ -28,10 +28,10 @@ resource "aws_cloudwatch_event_rule" "forward_to_cw_lg" {
 }
 
 resource "aws_cloudwatch_event_target" "forward_to_cw_lg" {
-  target_id = "SendToCwLg"
-  rule      = aws_cloudwatch_event_rule.forward_to_cw_lg.name
+  target_id      = "SendToCwLg"
+  rule           = aws_cloudwatch_event_rule.forward_to_cw_lg.name
   event_bus_name = var.settings.eventbus_name
-  arn       = aws_cloudwatch_log_group.cw_lg_events_dump.arn
+  arn            = aws_cloudwatch_log_group.cw_lg_events_dump.arn
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ resource "aws_cloudwatch_log_group" "cw_lg_events_dump" {
   retention_in_days = var.settings.cw_lg.lg_retention_in_days
   kms_key_id        = var.settings.cw_lg.lg_encyrption != null ? module.cw_lg_events_dump_encryption[0].kms_cmk_arn : null
   tags              = var.resource_tags
-  depends_on = [ module.cw_lg_events_dump_encryption[0] ]
+  depends_on        = [module.cw_lg_events_dump_encryption[0]]
 }
 
 data "aws_iam_policy_document" "cw_lg_events_dump_policy" {
@@ -77,11 +77,11 @@ resource "aws_cloudwatch_log_resource_policy" "cw_lg_events_dump_policy" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "cw_lg_events_dump_encryption" {
   source = "../kms"
-  count = var.settings.cw_lg.lg_encyrption != null ? 1 : 0
+  count  = var.settings.cw_lg.lg_encyrption != null ? 1 : 0
 
   cmk_settings = {
-    alias = "cmk-for-cw-lg-${var.settings.cw_lg.lg_name}"
-    description ="This key is used to encrypt the logs of the CloudWatch LogGroup ${var.settings.cw_lg.lg_name}"
+    alias           = "cmk-for-cw-lg-${var.settings.cw_lg.lg_name}"
+    description     = "This key is used to encrypt the logs of the CloudWatch LogGroup ${var.settings.cw_lg.lg_name}"
     policy_override = var.settings.cw_lg.lg_encyrption.cmk_policy_override
     policy_consumers = [
       data.aws_iam_policy_document.cw_lg_events_dump_encryption_cmk_policy[0].json

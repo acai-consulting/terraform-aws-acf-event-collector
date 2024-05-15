@@ -23,8 +23,8 @@ data "aws_caller_identity" "core_logging" { provider = aws.core_logging }
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ LOCALS
 # ---------------------------------------------------------------------------------------------------------------------
-locals  {
-  eb_forwarding_iam_role_name =  "test-event-collector-forwarder-role"
+locals {
+  eb_forwarding_iam_role_name = "test-event-collector-forwarder-role"
 }
 
 
@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "override" {
     effect = "Allow"
 
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_caller_identity.core_security.account_id}:root",
         "arn:aws:iam::${data.aws_caller_identity.core_logging.account_id}:root"
@@ -125,7 +125,7 @@ module "event_sender1" {
       }
       event_rules = [
         {
-          name = "failed_aws_backups"
+          name    = "failed_aws_backups"
           pattern = <<PATTERN
 {
   "source": ["aws.backup"],
@@ -137,7 +137,7 @@ module "event_sender1" {
 PATTERN
         },
         {
-          name = "disabled_key_rotation"
+          name    = "disabled_key_rotation"
           pattern = <<PATTERN
 {
   "detail-type": ["AWS API Call via CloudTrail"],
@@ -171,7 +171,7 @@ module "event_sender2" {
       }
       event_rules = [
         {
-          name = "console_logins"
+          name    = "console_logins"
           pattern = <<PATTERN
 {
   "source": ["aws.signin", "aws.sso"],
@@ -208,7 +208,7 @@ module "event_sender_cf" {
       }
       event_rules = [
         {
-          name = "failed_aws_backups"
+          name    = "failed_aws_backups"
           pattern = <<PATTERN
         source:
           - "aws.backup"
@@ -221,7 +221,7 @@ module "event_sender_cf" {
 PATTERN
         },
         {
-          name = "disable_key_rotation"
+          name    = "disable_key_rotation"
           pattern = <<PATTERN
         detail-type:
           - "AWS API Call via CloudTrail"

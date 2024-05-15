@@ -12,7 +12,7 @@ variable "settings" {
         lg_retention_in_days = optional(number, 30)
         lg_skip_destroy      = optional(bool, false)
         lg_encyrption = optional(object({
-          cmk_policy_override       = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
+          cmk_policy_override = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
         }), null)
       })), [])
     })
