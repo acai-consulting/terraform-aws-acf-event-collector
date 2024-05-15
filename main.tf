@@ -83,6 +83,9 @@ resource "aws_cloudwatch_event_bus_policy" "central_bus_policy_attach" {
 # https://aws.amazon.com/de/about-aws/whats-new/2024/05/amazon-eventbridge-cmk-event-buses/
 # ---------------------------------------------------------------------------------------------------------------------
 module "eventbus_encryption" {
+  # checkov:skip=CKV_AWS_109
+  # checkov:skip=CKV_AWS_111
+  # checkov:skip=CKV_AWS_356
   source = "./modules/kms"
   count  = var.settings.eventbus_encyrption != null ? 1 : 0
 
@@ -97,9 +100,6 @@ module "eventbus_encryption" {
 }
 
 data "aws_iam_policy_document" "eventbus_encryption_policy" {
-  # checkov:skip=CKV_AWS_109
-  # checkov:skip=CKV_AWS_111
-  # checkov:skip=CKV_AWS_356
   count = var.settings.eventbus_encyrption != null ? 1 : 0
 
   statement {
