@@ -2,13 +2,12 @@
 # ¦ VERSIONS
 # ---------------------------------------------------------------------------------------------------------------------
 terraform {
-  required_version = ">= 1.0.0"
+  required_version = ">= 1.3.10"
 
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      version               = ">= 4.0"
-      configuration_aliases = []
+      source  = "hashicorp/aws"
+      version = ">= 4.0"
     }
   }
 }
@@ -16,22 +15,33 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ DATA
 # ---------------------------------------------------------------------------------------------------------------------
-data "aws_caller_identity" "core_security" {provider = aws.core_security}
-data "aws_caller_identity" "core_logging" {provider = aws.core_logging}
-
+data "aws_caller_identity" "current" {}
 
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ TEST DATA
+# ¦ OPTIONAL ENCRYPTION
 # ---------------------------------------------------------------------------------------------------------------------
+resource "aws_kms_key" "kms_cmk" {
+  description             = var.cmk_settings.description
+  enable_key_rotation     = true
+  deletion_window_in_days = var.cmk_settings.deletion_window_in_days
+  policy                  = data.aws_iam_policy_document.kms_cmk_policy.json
+  tags                    = var.resource_tags
+}
 
-data "aws_iam_policy_document" "override" {
+data "aws_iam_policy_document" "kms_cmk_policy" {
+  source_policy_documents   = var.cmk_settings.policy_consumers
+  override_policy_documents = concat(
+    var.cmk_settings.policy_read_override, 
+    var.cmk_settings.policy_management_override, 
+  )
+
   statement {
     sid    = "ReadPermissions"
     effect = "Allow"
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.core_logging.account_id}:root"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
     actions = [
       "kms:Describe*",
@@ -46,7 +56,7 @@ data "aws_iam_policy_document" "override" {
 
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.core_security.account_id}:root"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
     actions = [
       "kms:Create*",
@@ -68,28 +78,7 @@ data "aws_iam_policy_document" "override" {
   }
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# ¦ MODULE
-# ---------------------------------------------------------------------------------------------------------------------
-module "example_complete" {
-  source = "../../"
-
-  settings = {
-    eventbus_name = "test"
-    forwardings = {
-      cw_lg = [
-        {
-          lg_name = "test-lg"
-          lg_encyrption = {
-            kms_policy_overrides = [
-              data.aws_iam_policy_document.override.json
-            ]
-          }
-        }
-      ]
-    }
-  } 
-  providers = {
-    aws = aws.core_security
-  }  
+resource "aws_kms_alias" "kms_cmk_alias" {
+  name          = "alias/${var.cmk_settings.alias}"
+  target_key_id = aws_kms_key.kms_cmk.key_id
 }

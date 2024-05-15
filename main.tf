@@ -2,8 +2,7 @@
 # ¦ REQUIREMENTS
 # ---------------------------------------------------------------------------------------------------------------------
 terraform {
-  # This module is only being tested with Terraform 1.0 and newer.
-  required_version = ">= 1.0.0"
+  required_version = ">= 1.3.10"
 
   required_providers {
     aws = {
@@ -33,13 +32,11 @@ locals {
       "module_version"         = /*inject_version_start*/ "1.0.0" /*inject_version_end*/
     }
   )
-  forwardings = flatten([
-    for setting in var.settings : [
-      for forwarding in setting.forwardings : {
-        eventbus_name = setting.eventbus_name
-        cw_lg         = forwarding.cw_lg
-      }
-    ]
+  cw_lg_forwardings = flatten([
+    for cw_lg_forwarding in var.settings.forwardings.cw_lg : {
+      eventbus_name = var.settings.eventbus_name
+      cw_lg         = cw_lg_forwarding
+    }
   ])
 }
 
@@ -80,9 +77,11 @@ resource "aws_cloudwatch_event_bus_policy" "central_bus_policy_attach" {
   event_bus_name = aws_cloudwatch_event_bus.collector.name
 }
 
-
+# ---------------------------------------------------------------------------------------------------------------------
+# ¦ FORWARDING TO ClOUDWATCH LOGGROUP
+# ---------------------------------------------------------------------------------------------------------------------
 module "cw_lg_forwarding" {
-  for_each = { for fw in local.forwardings : "${fw.eventbus_name}-${fw.cw_lg.lg_name}" => fw }
+  for_each = { for fw in local.cw_lg_forwardings : "${fw.eventbus_name}-${fw.cw_lg.lg_name}" => fw }
 
   source              = "./modules/forward-to-cw-lg"
   settings = {
@@ -91,3 +90,4 @@ module "cw_lg_forwarding" {
   }
   resource_tags = var.resource_tags
 }
+
