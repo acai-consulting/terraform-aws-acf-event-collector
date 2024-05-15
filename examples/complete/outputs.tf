@@ -15,5 +15,5 @@ output "event_sender2" {
 
 output "event_sender_cf" {
   description = "event_sender_cf"
-  value       = module.event_sender2
+  value       = module.event_sender_cf
 }

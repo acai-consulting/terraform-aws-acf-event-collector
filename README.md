@@ -1,43 +1,101 @@
-# AWS REPLACE_ME Terraform module
+# terraform-aws-acf-event-collector Terraform module
 
 <!-- LOGO -->
 <a href="https://acai.gmbh">    
-  <img src="https://acai.gmbh/images/logo/logo-acai-badge.png" alt="acai logo" title="ACAI" align="right" height="100" />
+  <img src="https://github.com/acai-consulting/acai.public/raw/main/logo/logo_github_readme.png" alt="acai logo" title="ACAI" align="right" height="75" />
 </a>
 
 <!-- SHIELDS -->
 [![Maintained by acai.gmbh][acai-shield]][acai-url]
-[![Terraform Version][terraform-version-shield]][terraform-version-url]
+![module-version-shield]
+![terraform-version-shield]
+![trivy-shield]
+![checkov-shield]
 [![Latest Release][release-shield]][release-url]
 
 <!-- DESCRIPTION -->
-[Terraform][terraform-url] module to deploy REPLACE_ME resources on [AWS][aws-url]
+[Terraform][terraform-url] module to deploy a central [Amazon EventBridge Event Bus](https://docs.aws.amazon.com/de_de/eventbridge/latest/userguide/eb-event-bus.html) and decentral Amazon EventBridge rules sending to the centralAmazon EventBridge Event Bus.
 
 <!-- ARCHITECTURE -->
 ## Architecture
-![architecture][architecture-png]
-
-<!-- FEATURES -->
-## Features
-* Creates a REPLACE_ME
+![architecture][architecture-url]
 
 <!-- USAGE -->
 ## Usage
 
-### REPLACE_ME
-```hcl
-module "REPLACE_ME" {
-  source  = "acai/REPLACE_ME/aws"
-  version = "~> 1.0"
+### Central Amazon EventBridge Event Bus
 
-  input1 = "value1"
+```hcl
+module "central_collector" {
+  source = "./"
+
+  settings = {
+    eventbus_name = "central_eventbus"
+    forwardings = {
+      cw_lg = [
+        {
+          lg_name = "central_events"
+        }
+      ]
+    }
+  }
+  providers = {
+    aws = aws.core_security
+  }
 }
 ```
 
+### Decentral Amazon EventBridge EventRules
+
+```hcl
+module "event_sender1" {
+  source = "./member/terraform"
+
+  member_settings = {
+    event_collector = {
+      central_eventbus_arn = module.central_collector.eventbus_arn
+    }
+    account_baseline = {
+      eb_forwarding_iam_role = {
+        name = local.eb_forwarding_iam_role_name
+      }
+      event_rules = [
+        {
+          name = "failed_aws_backups"
+          pattern = <<PATTERN
+{
+  "source": ["aws.backup"],
+  "detail-type": ["Backup Job State Change", "Copy Job State Change"],
+  "detail": {
+    "state": ["FAILED", "COMPLETED"]
+  }
+}
+PATTERN
+        },
+        {
+          name = "disabled_key_rotation"
+          pattern = <<PATTERN
+{
+  "detail-type": ["AWS API Call via CloudTrail"],
+  "detail": {
+    "eventSource": ["kms.amazonaws.com"],
+    "eventName": ["DisableKeyRotation"]
+  }
+}
+PATTERN
+        }
+      ]
+    }
+  }
+  providers = {
+    aws = aws.workload
+  }
+}
+```
 <!-- EXAMPLES -->
 ## Examples
 
-* [`examples/complete`][example-complete-url]
+* [examples/complete][example-complete-url]
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -96,13 +154,13 @@ See [LICENSE][license-url] for full details
 <!-- MARKDOWN LINKS & IMAGES -->
 [acai-shield]: https://img.shields.io/badge/maintained_by-acai.gmbh-CB224B?style=flat
 [acai-url]: https://acai.gmbh
-[terraform-version-shield]: https://img.shields.io/badge/tf-%3E%3D0.15.0-blue.svg?style=flat&color=blueviolet
-[terraform-version-url]: https://www.terraform.io/upgrade-guides/0-15.html
-[release-shield]: https://img.shields.io/github/v/release/acai-consulting/REPLACE_ME?style=flat&color=success
-[architecture-png]: https://github.com/acai-consulting/REPLACE_ME/blob/main/docs/architecture.png?raw=true
-[release-url]: https://github.com/acai-consulting/REPLACE_ME/releases
-[contributors-url]: https://github.com/acai-consulting/REPLACE_ME/graphs/contributors
-[license-url]: https://github.com/acai-consulting/REPLACE_ME/tree/main/LICENSE
+[module-version-shield]: https://img.shields.io/badge/module_version-1.1.0-CB224B?style=flat
+[terraform-version-shield]: https://img.shields.io/badge/tf-%3E%3D1.3.10-blue.svg?style=flat&color=blueviolet
+[trivy-shield]: https://img.shields.io/badge/trivy-passed-green
+[checkov-shield]: https://img.shields.io/badge/checkov-passed-green
+[release-shield]: https://img.shields.io/github/v/release/acai-consulting/terraform-aws-acf-event-collector?style=flat&color=success
+[release-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/releases
+[license-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/tree/main/LICENSE.md
+[example-complete-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/examples/complete
 [terraform-url]: https://www.terraform.io
-[aws-url]: https://aws.amazon.com
-[example-complete-url]: https://github.com/acai-consulting/REPLACE_ME/tree/main/examples/complete
+[architecture-url]: ./docs/terraform-aws-acf-event-collector.svg

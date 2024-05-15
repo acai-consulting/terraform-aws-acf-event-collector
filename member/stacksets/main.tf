@@ -47,7 +47,19 @@ data "template_file" "member_regional" {
   vars = {
     central_eventbus_arn           = var.member_settings.event_collector.central_eventbus_arn
     central_eventbus_iam_role_name = var.member_settings.account_baseline.eb_forwarding_iam_role.name
-    event_rules                    = var.member_settings.account_baseline.event_rules
+    event_rules = jsonencode([
+      for rule in var.member_settings.account_baseline.event_rules : {
+        camel_case_name = join("", [
+          for part in split("_", replace(rule.name, "-", "_")) : title(part)
+        ])        
+        name           = rule.name
+        description    = rule.description
+        event_bus_name = rule.event_bus_name
+        pattern        = rule.pattern
+
+      }
+      ]
+    )
 
     resource_tags_block = local.resource_tags_block
   }

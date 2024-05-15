@@ -1,19 +1,13 @@
-# https://github.com/aws-samples/aws-backup-automation/blob/main/CloudFormation/aws-backup-member-account-iam-role.yaml
-
 AWSTemplateFormatVersion: '2010-09-09'
-Description: >
-  This template creates the Backup KMS Key and Vault required for the automated centralized backup at scale in AWS Organizations using AWS Backup.
-  It should be deployed in each member account.
 
 Resources:
   CentralNotificationBackupAlertRole:
     Type: "AWS::IAM::Role"
     Properties:
       RoleName: ${central_eventbus_iam_role_name}
-      Path: ${central_eventbus_iam_role_path}
-      PermissionsBoundary: ${central_eventbus_iam_role_permissions_boundary_arn}
-      Tags: 
-${resource_tags_block}      
+      Path: "${central_eventbus_iam_role_path}"%{ if central_eventbus_iam_role_permissions_boundary_arn != "" }
+      PermissionsBoundary: ${central_eventbus_iam_role_permissions_boundary_arn}%{ endif }
+      Tags:${resource_tags_block}      
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:

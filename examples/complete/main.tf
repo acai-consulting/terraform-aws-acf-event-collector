@@ -134,7 +134,7 @@ module "event_sender1" {
 PATTERN
         },
         {
-          name = "disable_key_rotation"
+          name = "disabled_key_rotation"
           pattern = <<PATTERN
 {
   "detail-type": ["AWS API Call via CloudTrail"],
