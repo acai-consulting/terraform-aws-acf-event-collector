@@ -29,11 +29,8 @@ resource "aws_kms_key" "kms_cmk" {
 }
 
 data "aws_iam_policy_document" "kms_cmk_policy" {
+  override_policy_documents = var.cmk_settings.policy_override
   source_policy_documents   = var.cmk_settings.policy_consumers
-  override_policy_documents = concat(
-    var.cmk_settings.policy_read_override, 
-    var.cmk_settings.policy_management_override, 
-  )
 
   statement {
     sid    = "ReadPermissions"

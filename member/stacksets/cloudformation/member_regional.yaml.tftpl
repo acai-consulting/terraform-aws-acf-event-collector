@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  CentralNotificationDetectFailedBackups:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: "backup_failure_to_central_eventbus"
+      EventPattern:
+        source:
+          - "aws.backup"
+        detail-type:
+          - "Backup Job State Change"
+          - "Copy Job State Change"
+        detail:
+          state:
+            - "FAILED"
+      Targets:
+        - Arn: ${auditing_central_eventbus_arn}
+          Id: "SendToCentralEventBus"
+          RoleArn: !Sub arn:aws:iam::$${AWS::AccountId}:role/${central_eventbus_iam_role_name}

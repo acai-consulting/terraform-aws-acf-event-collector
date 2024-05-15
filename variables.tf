@@ -3,7 +3,7 @@ variable "settings" {
   type = object({
     eventbus_name = string
     eventbus_encyrption = optional(object({
-      kms_policy_overrides = optional(list(string), null) # should override the statement_id 'PrincipalPermissions'
+      cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
     }), null)
     forwardings = object({
       cw_lg = optional(list(object({
@@ -12,8 +12,7 @@ variable "settings" {
         lg_retention_in_days = optional(number, 30)
         lg_skip_destroy      = optional(bool, false)
         lg_encyrption = optional(object({
-          cmk_policy_read_override       = optional(list(string), null) # should override the statement_id 'ReadPermissions'
-          cmk_policy_management_override = optional(list(string), null) # should override the statement_id 'ManagementPermissions'
+          cmk_policy_override       = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
         }), null)
       })), [])
     })

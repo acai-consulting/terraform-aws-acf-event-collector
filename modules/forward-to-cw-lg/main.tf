@@ -41,8 +41,9 @@ resource "aws_cloudwatch_log_group" "cw_lg_events_dump" {
   name              = var.settings.cw_lg.lg_name
   skip_destroy      = var.settings.cw_lg.lg_skip_destroy
   retention_in_days = var.settings.cw_lg.lg_retention_in_days
-  kms_key_id        = var.settings.cw_lg.lg_encyrption != null ? module.cw_lg_events_dump_encryption[0].arn : null
+  kms_key_id        = var.settings.cw_lg.lg_encyrption != null ? module.cw_lg_events_dump_encryption[0].kms_cmk_arn : null
   tags              = var.resource_tags
+  depends_on = [ module.cw_lg_events_dump_encryption[0] ]
 }
 
 data "aws_iam_policy_document" "cw_lg_events_dump_policy" {
@@ -81,10 +82,9 @@ module "cw_lg_events_dump_encryption" {
   cmk_settings = {
     alias = "cmk-for-cw-lg-${var.settings.cw_lg.lg_name}"
     description ="This key is used to encrypt the logs of the CloudWatch LogGroup ${var.settings.cw_lg.lg_name}"
-    policy_read_override = var.settings.cw_lg.lg_encyrption.cmk_policy_read_override
-    policy_management_override = var.settings.cw_lg.lg_encyrption.cmk_policy_management_override
+    policy_override = var.settings.cw_lg.lg_encyrption.cmk_policy_override
     policy_consumers = [
-      data.aws_iam_policy_document.cw_lg_events_dump_encryption_cmk_policy.json
+      data.aws_iam_policy_document.cw_lg_events_dump_encryption_cmk_policy[0].json
     ]
   }
 }

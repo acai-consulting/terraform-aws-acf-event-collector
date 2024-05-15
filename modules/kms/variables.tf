@@ -4,8 +4,7 @@ variable "cmk_settings" {
     alias = optional(string, null)
     description = string
     deletion_window_in_days = optional(number, 30)
-    policy_read_override = optional(list(string), null) # should override the statement_id 'ReadPermissions'
-    policy_management_override = optional(list(string), null) # should override the statement_id 'ManagementPermissions'
+    policy_override = list(string) # should override the statement_id 'ReadPermissions'
     policy_consumers = list(string)
   })
 }

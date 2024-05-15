@@ -16,8 +16,8 @@ terraform {
 # ---------------------------------------------------------------------------------------------------------------------
 # ¦ DATA
 # ---------------------------------------------------------------------------------------------------------------------
-data "aws_caller_identity" "core_security" {provider = aws.core_security}
-data "aws_caller_identity" "core_logging" {provider = aws.core_logging}
+data "aws_caller_identity" "core_security" { provider = aws.core_security }
+data "aws_caller_identity" "core_logging" { provider = aws.core_logging }
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -76,20 +76,26 @@ module "example_complete" {
 
   settings = {
     eventbus_name = "test"
+    eventbus_encyrption = {
+      cmk_policy_override = [
+        data.aws_iam_policy_document.override.json
+      ]
+    }
+
     forwardings = {
       cw_lg = [
         {
           lg_name = "test-lg"
           lg_encyrption = {
-            kms_policy_overrides = [
+            cmk_policy_override = [
               data.aws_iam_policy_document.override.json
             ]
           }
         }
       ]
     }
-  } 
+  }
   providers = {
     aws = aws.core_security
-  }  
+  }
 }
