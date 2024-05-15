@@ -50,6 +50,7 @@ data "aws_iam_policy_document" "kms_cmk_policy" {
     ]
     resources = ["*"]
   }
+  
   statement {
     sid    = "ManagementPermissions"
     effect = "Allow"
@@ -79,6 +80,7 @@ data "aws_iam_policy_document" "kms_cmk_policy" {
 }
 
 resource "aws_kms_alias" "kms_cmk_alias" {
-  name          = "alias/${var.cmk_settings.alias}"
+  count        = var.cmk_settings.alias != null ? 1 : 0
+  name         = "alias/${var.cmk_settings.alias}"
   target_key_id = aws_kms_key.kms_cmk.key_id
 }
