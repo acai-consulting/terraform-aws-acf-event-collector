@@ -174,6 +174,39 @@ PATTERN
   }
   is_primary_region = false
   providers = {
+    aws = aws.workload_use1
+  }
+}
+
+module "event_sender3" {
+  source = "../../member/terraform"
+
+  member_settings = {
+    event_collector = {
+      central_eventbus_arn = module.central_collector.eventbus_arn
+    }
+    account_baseline = {
+      eb_forwarding_iam_role = {
+        name = local.eb_forwarding_iam_role_name
+      }
+      event_rules = [
+        {
+          name = "disable_key_rotation"
+          pattern = <<PATTERN
+{
+"detail-type": ["AWS API Call via CloudTrail"],
+"detail": {
+  "eventSource": ["kms.amazonaws.com"],
+  "eventName": ["DisableKeyRotation"]
+}
+}
+PATTERN
+        }
+      ]
+    }
+  }
+  is_primary_region = false
+  providers = {
     aws = aws.workload
   }
 }

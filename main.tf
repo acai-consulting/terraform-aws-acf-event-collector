@@ -87,7 +87,7 @@ module "eventbus_encryption" {
   count  = var.settings.eventbus_encyrption != null ? 1 : 0
 
   cmk_settings = {
-    alias           = "cmk-for-cw-lg-${var.settings.eventbus_name}"
+    alias           = "cmk-for-eventbus-${var.settings.eventbus_name}"
     description     = "This key is used to encrypt the Events in the Eventbus ${var.settings.eventbus_name}"
     policy_override = var.settings.eventbus_encyrption.cmk_policy_override
     policy_consumers = [

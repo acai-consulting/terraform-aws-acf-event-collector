@@ -7,7 +7,7 @@ variable "settings" {
     }), null)
     forwardings = object({
       cw_lg = optional(list(object({
-        event_pattern        = optional(string, "{ \"source\": [\"aws.events\"] }")
+        event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")
         lg_name              = string
         lg_retention_in_days = optional(number, 30)
         lg_skip_destroy      = optional(bool, false)
