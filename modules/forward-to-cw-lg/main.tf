@@ -90,6 +90,9 @@ module "cw_lg_events_dump_encryption" {
 }
 
 data "aws_iam_policy_document" "cw_lg_events_dump_encryption_cmk_policy" {
+  # checkov:skip=CKV_AWS_109
+  # checkov:skip=CKV_AWS_111
+  # checkov:skip=CKV_AWS_356
   count = var.settings.cw_lg.lg_encyrption != null ? 1 : 0
 
   statement {

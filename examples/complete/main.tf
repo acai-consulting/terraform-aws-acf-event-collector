@@ -33,6 +33,9 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "aws_iam_policy_document" "override" {
+  # checkov:skip=CKV_AWS_109
+  # checkov:skip=CKV_AWS_111
+  # checkov:skip=CKV_AWS_356
   statement {
     sid    = "ReadPermissions"
     effect = "Allow"

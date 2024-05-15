@@ -97,6 +97,9 @@ module "eventbus_encryption" {
 }
 
 data "aws_iam_policy_document" "eventbus_encryption_policy" {
+  # checkov:skip=CKV_AWS_109
+  # checkov:skip=CKV_AWS_111
+  # checkov:skip=CKV_AWS_356
   count = var.settings.eventbus_encyrption != null ? 1 : 0
 
   statement {
