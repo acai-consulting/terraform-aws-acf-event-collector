@@ -7,9 +7,8 @@ terraform {
 
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      version               = ">= 4.0"
-      configuration_aliases = []
+      source  = "hashicorp/aws"
+      version = ">= 4.0"
     }
   }
 }
@@ -34,7 +33,6 @@ locals {
       "module_version"         = /*inject_version_start*/ "1.0.0" /*inject_version_end*/
     }
   )
-
   forwardings = flatten([
     for setting in var.settings : [
       for forwarding in setting.forwardings : {
@@ -72,10 +70,16 @@ data "aws_iam_policy_document" "central_bus_policy" {
     condition {
       test     = "StringEquals"
       variable = "aws:PrincipalOrgID"
-      values   = ["${data.aws_organizations_organization.org_id.id}"]
+      values   = ["${data.aws_organizations_organization.current.id}"]
     }
   }
 }
+
+resource "aws_cloudwatch_event_bus_policy" "central_bus_policy_attach" {
+  policy         = data.aws_iam_policy_document.central_bus_policy.json
+  event_bus_name = aws_cloudwatch_event_bus.collector.name
+}
+
 
 module "cw_lg_forwarding" {
   for_each = { for fw in local.forwardings : "${fw.eventbus_name}-${fw.cw_lg.lg_name}" => fw }
@@ -83,7 +87,7 @@ module "cw_lg_forwarding" {
   source              = "./modules/forward-to-cw-lg"
   settings = {
     eventbus_name = each.value.eventbus_name
-    cw_lg = each.value.cw_lg
+    cw_lg         = each.value.cw_lg
   }
   resource_tags = var.resource_tags
 }

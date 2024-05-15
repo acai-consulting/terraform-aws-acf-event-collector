@@ -6,9 +6,8 @@ terraform {
 
   required_providers {
     aws = {
-      source                = "hashicorp/aws"
-      version               = ">= 4.0"
-      configuration_aliases = []
+      source  = "hashicorp/aws"
+      version = ">= 4.0"
     }
   }
 }
@@ -20,7 +19,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ FORWARDING EVENTS
+# ¦ FORWARDING ALL EVENTS
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_cloudwatch_event_bus_policy" "central_bus_policy_attach" {
   policy         = data.aws_iam_policy_document.central_bus_policy.json
@@ -36,7 +35,7 @@ resource "aws_cloudwatch_event_rule" "forward_to_cw_lg" {
 resource "aws_cloudwatch_event_target" "forward_to_cw_lg" {
   rule      = aws_cloudwatch_event_rule.forward_to_cw_lg.name
   target_id = "SendToCwLg"
-  arn       = aws_cloudwatch_log_group.events_dump.arn
+  arn       = aws_cloudwatch_log_group.cw_lg_events_dump.arn
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -46,7 +45,7 @@ resource "aws_cloudwatch_log_group" "cw_lg_events_dump" {
   name              = var.settings.cw_lg.lg_name
   skip_destroy      = var.settings.cw_lg.lg_skip_destroy
   retention_in_days = var.settings.cw_lg.lg_retention_in_days
-  kms_key_id        = aws_kms_key.cloudwatch_logs.arn
+  kms_key_id        = aws_kms_key.cw_lg_events_dump_encryption[0].arn
   tags              = var.resource_tags
 }
 
@@ -91,10 +90,6 @@ resource "aws_kms_key" "cw_lg_events_dump_encryption" {
 data "aws_iam_policy_document" "cw_lg_events_dump_encryption_cmk_policy" {
   count = var.settings.cw_lg.lg_encyrption != null ? 1 : 0
 
-  #checkov:skip=CKV_AWS_109 : Resource policy
-  #checkov:skip=CKV_AWS_111 : Resource policy
-  #checkov:skip=CKV_AWS_356 : Resource policy  
-  # enable IAM in logging account
   override_policy_documents = var.settings.cw_lg.lg_encyrption.kms_policy_overrides
 
   statement {
