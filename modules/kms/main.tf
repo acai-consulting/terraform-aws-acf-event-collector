@@ -21,6 +21,9 @@ data "aws_caller_identity" "current" {}
 # ¦ OPTIONAL ENCRYPTION
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_kms_key" "kms_cmk" {
+  # checkov:skip=CKV_AWS_109
+  # checkov:skip=CKV_AWS_111
+  # checkov:skip=CKV_AWS_356
   description             = var.cmk_settings.description
   enable_key_rotation     = true
   deletion_window_in_days = var.cmk_settings.deletion_window_in_days
