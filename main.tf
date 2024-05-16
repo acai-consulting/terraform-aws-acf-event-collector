@@ -88,7 +88,7 @@ module "eventbus_encryption" {
   # checkov:skip=CKV_AWS_111
   # checkov:skip=CKV_AWS_356
   source = "./modules/kms"
-  count  = var.settings.eventbus_encyrption != null ? 1 : 0
+  count  = var.settings.central_eventbus.encyrption != null ? 1 : 0
 
   cmk_settings = {
     alias           = "cmk-for-eventbus-${local.central_eventbus_name}"
