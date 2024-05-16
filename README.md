@@ -134,13 +134,14 @@ PATTERN
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the central event collector. | <pre>object({<br>    eventbus_name = string<br>    eventbus_encyrption = optional(object({<br>      cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>    }), null)<br>    forwardings = object({<br>      cw_lg = optional(list(object({<br>        event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")<br>        lg_name              = string<br>        lg_retention_in_days = optional(number, 30)<br>        lg_skip_destroy      = optional(bool, false)<br>        lg_encyrption = optional(object({<br>          cmk_policy_override = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>        }), null)<br>      })), [])<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the central event collector. | <pre>object({<br>    central_eventbus = object({<br>      name = string<br>      encyrption = optional(object({<br>        cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>      }), null)<br>    })<br>    forwardings = object({<br>      cw_lg = optional(list(object({<br>        event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")<br>        lg_name              = string<br>        lg_retention_in_days = optional(number, 30)<br>        lg_skip_destroy      = optional(bool, false)<br>        lg_encyrption = optional(object({<br>          cmk_policy_override = optional(list(string), []) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'<br>        }), null)<br>      })), [])<br>    })<br>  })</pre> | n/a | yes |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| <a name="output_configuration_to_write"></a> [configuration\_to\_write](#output\_configuration\_to\_write) | HCL map to be stored in configuration map |
 | <a name="output_eventbus_arn"></a> [eventbus\_arn](#output\_eventbus\_arn) | eventbus\_arn |
 <!-- END_TF_DOCS -->
 
