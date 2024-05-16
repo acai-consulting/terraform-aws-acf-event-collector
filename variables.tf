@@ -1,10 +1,12 @@
 variable "settings" {
   description = "Settings for the central event collector."
   type = object({
-    eventbus_name = string
-    eventbus_encyrption = optional(object({
-      cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
-    }), null)
+    central_eventbus = object({
+      name = string
+      encyrption = optional(object({
+        cmk_policy_override = optional(list(string), null) # should override the statement_ids 'ReadPermissions' or 'ManagementPermissions'
+      }), null)
+    })
     forwardings = object({
       cw_lg = optional(list(object({
         event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")

@@ -88,13 +88,14 @@ module "central_collector" {
   source = "../../"
 
   settings = {
-    eventbus_name = "test"
-    eventbus_encyrption = {
-      cmk_policy_override = [
-        data.aws_iam_policy_document.override.json
-      ]
+    central_eventbus = {
+      name = "test"
+      encyrption = {
+        cmk_policy_override = [
+          data.aws_iam_policy_document.override.json
+        ]
+      }
     }
-
     forwardings = {
       cw_lg = [
         {

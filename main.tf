@@ -32,9 +32,10 @@ locals {
       "module_version"  = /*inject_version_start*/ "1.0.0" /*inject_version_end*/
     }
   )
+  central_eventbus_name = var.settings.central_eventbus.name
   cw_lg_forwardings = flatten([
     for cw_lg_forwarding in var.settings.forwardings.cw_lg : {
-      eventbus_name = var.settings.eventbus_name
+      eventbus_name = local.central_eventbus_name
       cw_lg         = cw_lg_forwarding
     }
   ])
@@ -44,7 +45,7 @@ locals {
 # ¦ MAIN
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_cloudwatch_event_bus" "collector" {
-  name = var.settings.eventbus_name
+  name = local.central_eventbus_name
   tags = local.resource_tags
   #TODO: add KMS CMK ARN as soon as AWS Provider supports this
 }
@@ -90,9 +91,9 @@ module "eventbus_encryption" {
   count  = var.settings.eventbus_encyrption != null ? 1 : 0
 
   cmk_settings = {
-    alias           = "cmk-for-eventbus-${var.settings.eventbus_name}"
-    description     = "This key is used to encrypt the Events in the Eventbus ${var.settings.eventbus_name}"
-    policy_override = var.settings.eventbus_encyrption.cmk_policy_override
+    alias           = "cmk-for-eventbus-${local.central_eventbus_name}"
+    description     = "This key is used to encrypt the Events in the Eventbus ${local.central_eventbus_name}"
+    policy_override = var.settings.central_eventbus.encyrption.cmk_policy_override
     policy_consumers = [
       data.aws_iam_policy_document.eventbus_encryption_policy[0].json
     ]
@@ -100,7 +101,7 @@ module "eventbus_encryption" {
 }
 
 data "aws_iam_policy_document" "eventbus_encryption_policy" {
-  count = var.settings.eventbus_encyrption != null ? 1 : 0
+  count = var.settings.central_eventbus.encyrption != null ? 1 : 0
 
   statement {
     sid    = "ServicePermissions"
@@ -119,7 +120,7 @@ data "aws_iam_policy_document" "eventbus_encryption_policy" {
     condition {
       test     = "StringEquals"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:events:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:event-bus/${var.settings.eventbus_name}"]
+      values   = ["arn:aws:events:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:event-bus/${local.central_eventbus_name}"]
     }
   }
 }
