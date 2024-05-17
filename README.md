@@ -14,7 +14,7 @@
 [![Latest Release][release-shield]][release-url]
 
 <!-- DESCRIPTION -->
-[Terraform][terraform-url] module to deploy a central [Amazon EventBridge Event Bus](https://docs.aws.amazon.com/de_de/eventbridge/latest/userguide/eb-event-bus.html) and decentral Amazon EventBridge rules sending to the centralAmazon EventBridge Event Bus.
+[Terraform][terraform-url] module to deploy a central [Amazon EventBridge Event Bus](https://docs.aws.amazon.com/de_de/eventbridge/latest/userguide/eb-event-bus.html) and decentral Amazon EventBridge rules, sending to the central Amazon EventBridge Event Bus.
 
 <!-- ARCHITECTURE -->
 ## Architecture
