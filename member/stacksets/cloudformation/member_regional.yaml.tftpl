@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  %{ for item in jsondecode(event_rules) }
+  CreateEventRules${item.camel_case_name}:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: ${item.name}%{ if item.description != "" }
+      Description: ${item.description}%{ endif }
+      EventBusName: ${item.event_bus_name}
+      EventPattern:
+${item.pattern}
+      Targets:
+        - Arn: ${central_eventbus_arn}
+          Id: "SendToCentralEventBus"
+          RoleArn: !Sub arn:aws:iam::$${AWS::AccountId}:role/${central_eventbus_iam_role_name}
+      Tags: 
+${resource_tags_block}      
+  %{ endfor }

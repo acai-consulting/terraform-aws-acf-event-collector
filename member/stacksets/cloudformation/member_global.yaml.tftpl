@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  CentralNotificationBackupAlertRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: ${central_eventbus_iam_role_name}
+      Path: "${central_eventbus_iam_role_path}"%{ if central_eventbus_iam_role_permissions_boundary_arn != "" }
+      PermissionsBoundary: ${central_eventbus_iam_role_permissions_boundary_arn}%{ endif }
+      Tags:${resource_tags_block}      
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: "events.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: "backup_Alert_iam_policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "sid"
+                Effect: "Allow"
+                Action:
+                  - "events:PutEvents"
+                Resource: ${central_eventbus_arn}     
