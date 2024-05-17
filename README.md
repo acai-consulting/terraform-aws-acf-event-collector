@@ -148,19 +148,18 @@ PATTERN
 <!-- AUTHORS -->
 ## Authors
 
-This module is maintained by [ACAI GmbH][acai-url] with help from [these amazing contributors][contributors-url]
+This module is maintained by [ACAI GmbH][acai-url].
 
 <!-- LICENSE -->
 ## License
 
-This module is licensed under Apache 2.0
-<br />
-See [LICENSE][license-url] for full details
+See [LICENSE][license-url] for full details.
 
 <!-- COPYRIGHT -->
 <br />
 <br />
 <p align="center">Copyright &copy; 2024 ACAI GmbH</p>
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [acai-shield]: https://img.shields.io/badge/maintained_by-acai.gmbh-CB224B?style=flat
@@ -171,7 +170,7 @@ See [LICENSE][license-url] for full details
 [checkov-shield]: https://img.shields.io/badge/checkov-passed-green
 [release-shield]: https://img.shields.io/github/v/release/acai-consulting/terraform-aws-acf-event-collector?style=flat&color=success
 [release-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/releases
-[license-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/tree/main/LICENSE.md
+[license-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector?tab=License-1-ov-file
 [example-complete-url]: https://github.com/acai-consulting/terraform-aws-acf-event-collector/examples/complete
 [terraform-url]: https://www.terraform.io
 [architecture-url]: ./docs/terraform-aws-acf-event-collector.svg
