@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.0.2...1.0.3) (2024-05-17)
+
+
+### Bug Fixes
+
+* Rename LICENSE to LICENSE.md ([06cacab](https://github.com/acai-consulting/terraform-aws-acf-event-collector/commit/06cacabcd1e79361eb74eaffcc4e3dae0768b140))
+
 ## [1.0.2](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.0.1...1.0.2) (2024-05-17)
 
 
