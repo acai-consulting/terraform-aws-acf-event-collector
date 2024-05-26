@@ -116,13 +116,13 @@ module "central_collector" {
 
 
 module "event_sender1" {
-  source = "../../member/terraform"
+  source = "../../event-sender/terraform"
 
-  member_settings = {
+  settings = {
     event_collector = {
       central_eventbus_arn = module.central_collector.eventbus_arn
     }
-    account_baseline = {
+    sender = {
       eb_forwarding_iam_role = {
         name = local.eb_forwarding_iam_role_name
       }
@@ -162,13 +162,13 @@ PATTERN
 
 
 module "event_sender2" {
-  source = "../../member/terraform"
+  source = "../../event-sender/terraform"
 
-  member_settings = {
+  settings = {
     event_collector = {
       central_eventbus_arn = module.central_collector.eventbus_arn
     }
-    account_baseline = {
+    sender = {
       eb_forwarding_iam_role = {
         name = local.eb_forwarding_iam_role_name
       }
@@ -199,13 +199,13 @@ PATTERN
 
 
 module "event_sender_cf" {
-  source = "../../member/stacksets"
+  source = "../../event-sender/stacksets"
 
-  member_settings = {
+  settings = {
     event_collector = {
       central_eventbus_arn = module.central_collector.eventbus_arn
     }
-    account_baseline = {
+    sender = {
       eb_forwarding_iam_role = {
         name = local.eb_forwarding_iam_role_name
       }
