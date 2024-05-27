@@ -25,7 +25,7 @@ data "aws_region" "current" {}
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
   resource_tags = merge(
-    var.member_resource_tags,
+    var.resource_tags,
     {
       "module_provider" = "ACAI GmbH",
       "module_name"     = "terraform-aws-acf-event-collector",
@@ -41,9 +41,9 @@ locals {
 resource "aws_iam_role" "eventbus_forwarder" {
   count = var.is_primary_region == true ? 1 : 0
 
-  name                 = var.member_settings.account_baseline.eb_forwarding_iam_role.name
-  path                 = var.member_settings.account_baseline.eb_forwarding_iam_role.path
-  permissions_boundary = var.member_settings.account_baseline.eb_forwarding_iam_role.permissions_boundary_arn
+  name                 = var.settings.sender.eb_forwarding_iam_role.name
+  path                 = var.settings.sender.eb_forwarding_iam_role.path
+  permissions_boundary = var.settings.sender.eb_forwarding_iam_role.permissions_boundary_arn
   assume_role_policy   = data.aws_iam_policy_document.eventbus_forwarder_trust.json
   tags                 = local.resource_tags
 }
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "eventbus_forwarder_permissions" {
     actions = [
       "events:PutEvents"
     ]
-    resources = [var.member_settings.event_collector.central_eventbus_arn]
+    resources = [var.settings.event_collector.central_eventbus_arn]
   }
 }
 
@@ -96,20 +96,20 @@ data "aws_iam_policy_document" "eventbus_forwarder_permissions" {
 #   Allow event-bus from other account to send to Core Auditing Account 
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_cloudwatch_event_rule" "eventsrule_cloudwatch" {
-  count = length(var.member_settings.account_baseline.event_rules)
+  count = length(var.settings.sender.event_rules)
 
-  name           = element(var.member_settings.account_baseline.event_rules, count.index).name
-  description    = element(var.member_settings.account_baseline.event_rules, count.index).description
-  event_bus_name = element(var.member_settings.account_baseline.event_rules, count.index).event_bus_name
-  event_pattern  = element(var.member_settings.account_baseline.event_rules, count.index).pattern
+  name           = element(var.settings.sender.event_rules, count.index).name
+  description    = element(var.settings.sender.event_rules, count.index).description
+  event_bus_name = element(var.settings.sender.event_rules, count.index).event_bus_name
+  event_pattern  = element(var.settings.sender.event_rules, count.index).pattern
   tags           = local.resource_tags
 }
 
 resource "aws_cloudwatch_event_target" "forward_to_central_eb" {
-  count = length(var.member_settings.account_baseline.event_rules)
+  count = length(var.settings.sender.event_rules)
 
   target_id = "SendtoCentralEventBus"
-  role_arn  = replace("arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.member_settings.account_baseline.eb_forwarding_iam_role.path}${var.member_settings.account_baseline.eb_forwarding_iam_role.name}", "////", "/")
+  role_arn  = replace("arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${var.settings.sender.eb_forwarding_iam_role.path}${var.settings.sender.eb_forwarding_iam_role.name}", "////", "/")
   rule      = element(aws_cloudwatch_event_rule.eventsrule_cloudwatch.*.name, count.index)
-  arn       = var.member_settings.event_collector.central_eventbus_arn
+  arn       = var.settings.event_collector.central_eventbus_arn
 }

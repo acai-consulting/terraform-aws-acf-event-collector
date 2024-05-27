@@ -17,7 +17,7 @@ terraform {
 locals {
   resource_tags_block = templatefile("${path.module}/cloudformation/tags.yaml.tftpl", {
     map_of_tags = merge(
-      var.member_resource_tags,
+      var.resource_tags,
       {
         "module_provider" = "ACAI GmbH",
         "module_name"     = "terraform-aws-acf-event-collector",
@@ -34,10 +34,10 @@ locals {
 data "template_file" "member_global" {
   template = file("${path.module}/cloudformation/member_global.yaml.tftpl")
   vars = {
-    central_eventbus_arn                               = var.member_settings.event_collector.central_eventbus_arn
-    central_eventbus_iam_role_name                     = var.member_settings.account_baseline.eb_forwarding_iam_role.name
-    central_eventbus_iam_role_path                     = var.member_settings.account_baseline.eb_forwarding_iam_role.path
-    central_eventbus_iam_role_permissions_boundary_arn = var.member_settings.account_baseline.eb_forwarding_iam_role.permissions_boundary_arn
+    central_eventbus_arn                               = var.settings.event_collector.central_eventbus_arn
+    central_eventbus_iam_role_name                     = var.settings.sender.eb_forwarding_iam_role.name
+    central_eventbus_iam_role_path                     = var.settings.sender.eb_forwarding_iam_role.path
+    central_eventbus_iam_role_permissions_boundary_arn = var.settings.sender.eb_forwarding_iam_role.permissions_boundary_arn
     resource_tags_block                                = local.resource_tags_block
   }
 }
@@ -45,10 +45,10 @@ data "template_file" "member_global" {
 data "template_file" "member_regional" {
   template = file("${path.module}/cloudformation/member_regional.yaml.tftpl")
   vars = {
-    central_eventbus_arn           = var.member_settings.event_collector.central_eventbus_arn
-    central_eventbus_iam_role_name = var.member_settings.account_baseline.eb_forwarding_iam_role.name
+    central_eventbus_arn           = var.settings.event_collector.central_eventbus_arn
+    central_eventbus_iam_role_name = var.settings.sender.eb_forwarding_iam_role.name
     event_rules = jsonencode([
-      for rule in var.member_settings.account_baseline.event_rules : {
+      for rule in var.settings.sender.event_rules : {
         camel_case_name = join("", [
           for part in split("_", replace(rule.name, "-", "_")) : title(part)
         ])

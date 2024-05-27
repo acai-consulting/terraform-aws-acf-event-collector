@@ -1,10 +1,10 @@
-variable "member_settings" {
+variable "settings" {
   description = "Specification of the member resources"
   type = object({
     event_collector = object({
       central_eventbus_arn = optional(string, "")
     })
-    account_baseline = object({
+    sender = object({
       eb_forwarding_iam_role = object({
         name                     = optional(string, "event-collector-forwarder-role")
         path                     = optional(string, "/")
@@ -32,7 +32,7 @@ variable "stackset_name_regional" {
   default     = "account-baseline--event-collector-regional"
 }
 
-variable "member_resource_tags" {
+variable "resource_tags" {
   description = "A map of tags to assign to the resources in this module."
   type        = map(string)
   default     = {}
