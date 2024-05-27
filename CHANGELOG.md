@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.0.3...1.1.0) (2024-05-27)
+
+
+### Features
+
+* Renaming ([#2](https://github.com/acai-consulting/terraform-aws-acf-event-collector/issues/2)) ([0e3db94](https://github.com/acai-consulting/terraform-aws-acf-event-collector/commit/0e3db94e8de7a01daea606592fd19d723261e4b3))
+
 ## [1.0.3](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.0.2...1.0.3) (2024-05-17)
 
 
