@@ -17,7 +17,7 @@ terraform {
 locals {
   resource_tags_block = templatefile("${path.module}/cloudformation/tags.yaml.tftpl", {
     map_of_tags = merge(
-      var.member_resource_tags,
+      var.resource_tags,
       {
         "module_provider" = "ACAI GmbH",
         "module_name"     = "terraform-aws-acf-event-collector",
