@@ -25,7 +25,7 @@ data "aws_region" "current" {}
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
   resource_tags = merge(
-    var.member_resource_tags,
+    var.resource_tags,
     {
       "module_provider" = "ACAI GmbH",
       "module_name"     = "terraform-aws-acf-event-collector",
