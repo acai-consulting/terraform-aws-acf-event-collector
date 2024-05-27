@@ -1,5 +1,5 @@
 output "eventbus_forwarder_iam_role_name" {
-  value = var.member_settings.account_baseline.eb_forwarding_iam_role.name
+  value = var.settings.sender.eb_forwarding_iam_role.name
 }
 
 output "eventbus_forwarder_iam_role_arn" {

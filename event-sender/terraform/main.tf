@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "eventbus_forwarder_permissions" {
     actions = [
       "events:PutEvents"
     ]
-    resources = [var.sender_settings.event_collector.central_eventbus_arn]
+    resources = [var.settings.event_collector.central_eventbus_arn]
   }
 }
 
