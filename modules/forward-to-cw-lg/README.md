@@ -37,7 +37,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the target CW\_LG. | <pre>object({<br>    eventbus_name = string<br>    cw_lg = object({<br>      event_pattern = string<br>      event_patterns = list(object({<br>        pattern_name = string<br>        pattern      = string<br>      }))<br>      lg_name              = string<br>      lg_retention_in_days = number<br>      lg_skip_destroy      = bool<br>      lg_encyrption = object({<br>        cmk_policy_override = list(string) # should override the statement_id 'ReadPermissions'<br>      })<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the target CW\_LG. | <pre>object({<br>    eventbus_name = string<br>    cw_lg = object({<br>      event_pattern = string<br>      event_patterns = list(object({<br>        pattern_name = string<br>        pattern      = string<br>      }))<br>      lg_name              = string<br>      lg_retention_in_days = number<br>      lg_skip_destroy      = bool<br>      lg_encyrption = optional(object({<br>        cmk_policy_override = list(string) # should override the statement_id 'ReadPermissions'<br>      }), null)<br>    })<br>  })</pre> | n/a | yes |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
