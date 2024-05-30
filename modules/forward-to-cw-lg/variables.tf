@@ -11,9 +11,9 @@ variable "settings" {
       lg_name              = string
       lg_retention_in_days = number
       lg_skip_destroy      = bool
-      lg_encyrption = object({
+      lg_encyrption = optional(object({
         cmk_policy_override = list(string) # should override the statement_id 'ReadPermissions'
-      })
+      }), null)
     })
   })
 }
