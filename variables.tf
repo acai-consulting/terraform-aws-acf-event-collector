@@ -9,8 +9,8 @@ variable "settings" {
     })
     forwardings = object({
       cw_lg = optional(list(object({
-        event_pattern        = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")
-        event_patterns       = optional(list(object({
+        event_pattern = optional(string, "{ \"source\": [ { \"prefix\": \"\" } ] }")
+        event_patterns = optional(list(object({
           pattern_name = string
           pattern      = string
         })), [])
