@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.1.0...1.2.0) (2024-05-30)
+
+
+### Features
+
+* option to add multiple eventrule patterns sending to the same CW LG ([#3](https://github.com/acai-consulting/terraform-aws-acf-event-collector/issues/3)) ([9e0a603](https://github.com/acai-consulting/terraform-aws-acf-event-collector/commit/9e0a6036a0d752f207640652b4671b6a17c68158))
+
 ## [1.1.0](https://github.com/acai-consulting/terraform-aws-acf-event-collector/compare/1.0.3...1.1.0) (2024-05-27)
 
 
