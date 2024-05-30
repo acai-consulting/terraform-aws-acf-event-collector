@@ -23,7 +23,9 @@
 | Name | Type |
 |------|------|
 | [aws_cloudwatch_event_rule.forward_to_cw_lg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
+| [aws_cloudwatch_event_rule.forward_to_cw_lg_multiple](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_target.forward_to_cw_lg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
+| [aws_cloudwatch_event_target.forward_to_cw_lg_multiple](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_target) | resource |
 | [aws_cloudwatch_log_group.cw_lg_events_dump](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
 | [aws_cloudwatch_log_resource_policy.cw_lg_events_dump_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_resource_policy) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
@@ -35,7 +37,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the target CW\_LG. | <pre>object({<br>    eventbus_name = string<br>    cw_lg = object({<br>      event_pattern        = optional(string, null)<br>      lg_name              = string<br>      lg_retention_in_days = number<br>      lg_skip_destroy      = bool<br>      lg_encyrption = optional(object({<br>        cmk_policy_override = list(string) # should override the statement_id 'ReadPermissions'<br>      }), null)<br>    })<br>  })</pre> | n/a | yes |
+| <a name="input_settings"></a> [settings](#input\_settings) | Settings for the target CW\_LG. | <pre>object({<br>    eventbus_name = string<br>    cw_lg = object({<br>      event_pattern = string<br>      event_patterns = list(object({<br>        pattern_name = string<br>        pattern      = string<br>      }))<br>      lg_name              = string<br>      lg_retention_in_days = number<br>      lg_skip_destroy      = bool<br>      lg_encyrption = optional(object({<br>        cmk_policy_override = list(string) # should override the statement_id 'ReadPermissions'<br>      }), null)<br>    })<br>  })</pre> | n/a | yes |
 | <a name="input_resource_tags"></a> [resource\_tags](#input\_resource\_tags) | A map of tags to assign to the resources in this module. | `map(string)` | `{}` | no |
 
 ## Outputs
