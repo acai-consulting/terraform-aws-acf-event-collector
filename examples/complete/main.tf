@@ -99,13 +99,50 @@ module "central_collector" {
     forwardings = {
       cw_lg = [
         {
-          lg_name = "test-lg"
+          lg_name = "test-lg-all"
+          lg_encyrption = {
+            cmk_policy_override = [
+              data.aws_iam_policy_document.override.json
+            ]
+          }
+        },
+        {
+          lg_name = "test-lg-backup-plan"
+          event_patterns = [
+            {
+              pattern_name = "backup_plan_change"
+              pattern = <<PATTERN
+              {
+                "source": ["aws.backup"],
+                "detail-type": ["AWS Service Event via CloudTrail"],
+                "detail": {
+                  "eventSource": ["backup.amazonaws.com"],
+                  "eventName": ["UpdateOrganizationalBackupPlan", "CreateOrganizationalBackupPlan", "DeleteOrganizationalBackupPlan", "InvalidOrganizationalBackupPlan"]
+                }
+              }
+              PATTERN
+            },
+            {
+              pattern_name = "backup_org_policy_change"
+              pattern = <<PATTERN
+              {
+                "source": ["aws.backup"],
+                "detail-type": ["AWS Service Event via CloudTrail"],
+                "detail": {
+                  "eventSource": ["backup.amazonaws.com"],
+                  "eventName": ["UpdateOrganizationalBackupPlan", "CreateOrganizationalBackupPlan", "DeleteOrganizationalBackupPlan", "InvalidOrganizationalBackupPlan"]
+                }
+              }
+              PATTERN
+            },            
+          ]
           lg_encyrption = {
             cmk_policy_override = [
               data.aws_iam_policy_document.override.json
             ]
           }
         }
+
       ]
     }
   }

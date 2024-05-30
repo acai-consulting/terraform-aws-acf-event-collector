@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ VERSIONS
+# ¦ REQUIREMENTS
 # ---------------------------------------------------------------------------------------------------------------------
 terraform {
   required_version = ">= 1.3.10"
@@ -19,17 +19,38 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ FORWARDING ALL EVENTS
+# ¦ FORWARDING EVENTS BASED ON PATTERNS
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_cloudwatch_event_rule" "forward_to_cw_lg" {
+  count = var.settings.cw_lg.event_pattern != null ? 1 : 0
+
   name           = "forward_to_cw_lg_${var.settings.cw_lg.lg_name}"
   event_bus_name = var.settings.eventbus_name
   event_pattern  = var.settings.cw_lg.event_pattern
 }
 
 resource "aws_cloudwatch_event_target" "forward_to_cw_lg" {
+  count = var.settings.cw_lg.event_pattern != null ? 1 : 0
+
   target_id      = "SendToCwLg"
-  rule           = aws_cloudwatch_event_rule.forward_to_cw_lg.name
+  rule           = aws_cloudwatch_event_rule.forward_to_cw_lg[count.index].name
+  event_bus_name = var.settings.eventbus_name
+  arn            = aws_cloudwatch_log_group.cw_lg_events_dump.arn
+}
+
+resource "aws_cloudwatch_event_rule" "forward_to_cw_lg_multiple" {
+  count = var.settings.cw_lg.event_patterns != null && length(var.settings.cw_lg.event_patterns) > 0 ? length(var.settings.cw_lg.event_patterns) : 0
+
+  name           = "forward_to_cw_lg_${var.settings.cw_lg.event_patterns[count.index].pattern_name}_${var.settings.cw_lg.lg_name}"
+  event_bus_name = var.settings.eventbus_name
+  event_pattern  = var.settings.cw_lg.event_patterns[count.index].pattern
+}
+
+resource "aws_cloudwatch_event_target" "forward_to_cw_lg_multiple" {
+  count = var.settings.cw_lg.event_patterns != null && length(var.settings.cw_lg.event_patterns) > 0 ? length(var.settings.cw_lg.event_patterns) : 0
+
+  target_id      = "SendToCwLg_${var.settings.cw_lg.event_patterns[count.index].pattern_name}"
+  rule           = aws_cloudwatch_event_rule.forward_to_cw_lg_multiple[count.index].name
   event_bus_name = var.settings.eventbus_name
   arn            = aws_cloudwatch_log_group.cw_lg_events_dump.arn
 }
@@ -43,7 +64,7 @@ resource "aws_cloudwatch_log_group" "cw_lg_events_dump" {
   retention_in_days = var.settings.cw_lg.lg_retention_in_days
   kms_key_id        = var.settings.cw_lg.lg_encyrption != null ? module.cw_lg_events_dump_encryption[0].kms_cmk_arn : null
   tags              = var.resource_tags
-  depends_on        = [module.cw_lg_events_dump_encryption[0]]
+  depends_on        = [module.cw_lg_events_dump_encryption]
 }
 
 data "aws_iam_policy_document" "cw_lg_events_dump_policy" {

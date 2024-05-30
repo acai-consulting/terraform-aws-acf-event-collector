@@ -47,7 +47,7 @@ locals {
 resource "aws_cloudwatch_event_bus" "collector" {
   name = local.central_eventbus_name
   tags = local.resource_tags
-  #TODO: add KMS CMK ARN as soon as AWS Provider supports this
+  # TODO: add KMS CMK ARN as soon as AWS Provider supports this
 }
 
 data "aws_iam_policy_document" "central_bus_policy" {
@@ -88,12 +88,12 @@ module "eventbus_encryption" {
   # checkov:skip=CKV_AWS_111
   # checkov:skip=CKV_AWS_356
   source = "./modules/kms"
-  count  = var.settings.central_eventbus.encyrption != null ? 1 : 0
+  count  = var.settings.central_eventbus.encryption != null ? 1 : 0
 
   cmk_settings = {
     alias           = "cmk-for-eventbus-${local.central_eventbus_name}"
     description     = "This key is used to encrypt the Events in the Eventbus ${local.central_eventbus_name}"
-    policy_override = var.settings.central_eventbus.encyrption.cmk_policy_override
+    policy_override = var.settings.central_eventbus.encryption.cmk_policy_override
     policy_consumers = [
       data.aws_iam_policy_document.eventbus_encryption_policy[0].json
     ]
@@ -101,7 +101,7 @@ module "eventbus_encryption" {
 }
 
 data "aws_iam_policy_document" "eventbus_encryption_policy" {
-  count = var.settings.central_eventbus.encyrption != null ? 1 : 0
+  count = var.settings.central_eventbus.encryption != null ? 1 : 0
 
   statement {
     sid    = "ServicePermissions"
@@ -126,7 +126,7 @@ data "aws_iam_policy_document" "eventbus_encryption_policy" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# ¦ FORWARDING TO ClOUDWATCH LOGGROUP
+# ¦ FORWARDING TO CLOUDWATCH LOGGROUP
 # ---------------------------------------------------------------------------------------------------------------------
 module "cw_lg_forwarding" {
   for_each = { for fw in local.cw_lg_forwardings : "${fw.eventbus_name}-${fw.cw_lg.lg_name}" => fw }
